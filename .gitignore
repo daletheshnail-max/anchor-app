@@ -1,0 +1,14 @@
+# OS / editor junk
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+
+# never commit secrets or local binaries
+.env
+*.pem
+*.key
+cloudflared.exe
+
+# deps (none expected — app is dependency-free, this is just a safety net)
+node_modules/
