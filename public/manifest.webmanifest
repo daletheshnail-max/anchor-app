@@ -1,14 +1,14 @@
 {
   "name": "Anchor — your calm operating system",
   "short_name": "Anchor",
-  "description": "Offline wellness app for ADHD, depression, and recovery",
-  "start_url": "./index.html",
+  "description": "Offline wellness app for ADHD, depression, and recovery. SOS is free.",
+  "start_url": "./#/app",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0b1120",
   "theme_color": "#0b1120",
-  "categories": ["health", "lifestyle", "medical"],
+  "categories": ["health", "lifestyle"],
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
