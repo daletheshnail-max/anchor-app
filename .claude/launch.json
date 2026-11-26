@@ -4,7 +4,7 @@
     {
       "name": "anchor",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "5599", "--directory", "C:\\AI-Scripts\\wellness-app"],
+      "runtimeArgs": ["-m", "http.server", "5599", "--directory", "dist"],
       "port": 5599
     }
   ]

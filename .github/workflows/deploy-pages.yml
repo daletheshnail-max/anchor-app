@@ -1,5 +1,6 @@
 name: Deploy Anchor to GitHub Pages
 
+# Live site deploys only when this file is on main. Do not add other branches here.
 on:
   push:
     branches: [main]
@@ -22,14 +23,17 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Stage only the app files (no git internals, no README/bat)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install and build the static site
         run: |
-          mkdir _site
-          cp index.html manifest.webmanifest sw.js _site/
-          cp -r vendor icons _site/
+          npm ci
+          npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: dist
       - id: deployment
         uses: actions/deploy-pages@v4

@@ -10,5 +10,6 @@ desktop.ini
 *.key
 cloudflared.exe
 
-# deps (none expected — app is dependency-free, this is just a safety net)
+# deps and production output (GitHub Pages builds dist in CI; do not commit it)
 node_modules/
+dist/

@@ -1,20 +1,23 @@
 # Anchor — your calm operating system
 
-A single-file, offline-first web app for managing ADHD, depression, and addiction recovery.
-Built to plug into Dale's Agent OS. No build step, no internet required.
+An offline-first web app for managing ADHD, depression, and addiction recovery.
+Built to plug into Dale's Agent OS. The public site is a static Vite build. SOS is never paywalled.
 
 ## Run it
 
-**Double-click `Anchor.bat`.** It starts a tiny local server on `127.0.0.1:5599` and opens the app in your browser. Fully offline — localhost only, no internet, libraries vendored in `vendor/`.
-
-Serving (rather than opening `index.html` as a file) is deliberate: it gives a **stable origin** so your data reliably persists in the browser's localStorage. Opening the raw file works visually but some browsers won't persist localStorage on a `file://` origin — and your history is the one thing this app must not lose.
-
-Manual equivalent:
 ```
-python -m http.server 5599 --directory C:\AI-Scripts\wellness-app
+npm install
+npm run build
+npm run preview
 ```
-then open http://127.0.0.1:5599 . The Claude Code preview config name is `anchor`.
-Always launch on the same port — localStorage is keyed to the origin, so a different port = a fresh empty app.
+
+Preview serves the production site at http://127.0.0.1:4173 . **Double-click `Anchor.bat`** after a build to serve `dist/` on `127.0.0.1:5599` instead.
+
+Serving (rather than opening `index.html` as a file) is deliberate: it gives a **stable origin** so your data reliably persists in the browser's localStorage. Opening the raw source file does not run the app — JSX is compiled at build time.
+
+The Claude Code preview config name is `anchor` (it serves `dist/` on port 5599). Always launch on the same port — localStorage is keyed to the origin, so a different port = a fresh empty app.
+
+GitHub Pages deploys **only from `main`**, after `npm run build`. Do not push this staging branch to `main` until the owner says the live site can change.
 
 ## Simple vs Full view
 
@@ -27,14 +30,13 @@ The choice is saved (in `state.ui`) so it sticks between sessions.
 
 ## Install on your phone (Android PWA)
 
-Anchor is an installable **PWA** (`manifest.webmanifest` + `sw.js` + `icons/`). It runs full-screen with its own icon and works **offline** once installed. Installing needs **HTTPS**, so you host the folder once, then install from the phone:
+The landing page (`#/`) repeats these steps. Anchor is an installable **PWA** (`manifest.webmanifest` + a build-generated `sw.js` + `icons/`). It runs full-screen and works **offline** once installed. Installing needs **HTTPS** (or localhost).
 
-1. **Host it (2 min, free):** go to **app.netlify.com/drop** and drag the whole `wellness-app` folder onto the page. You get an `https://<name>.netlify.app` URL. (Create a free account to keep the URL permanent.)
-   - Alternatives: Cloudflare Pages, GitHub Pages, Vercel — any static host with HTTPS.
-2. **Install on Android:** open that URL in **Chrome** → **⋮ menu → Add to Home screen / Install app** → confirm. Anchor now launches like a native app, offline.
-3. **Quick test without hosting:** run the local server (`Anchor.bat`) and expose it over HTTPS with a tunnel, e.g. `winget install cloudflare.cloudflared` then `cloudflared tunnel --url http://localhost:5599`. Install the temporary `https://…trycloudflare.com` URL on your phone. (URL changes each run — good for trials, not permanent.)
+1. **Host the `dist/` folder** on any static host with HTTPS. GitHub Pages does this from `main` only, and only after the production build.
+2. **Add to Home screen:** Android Chrome → menu → **Add to Home screen** / Install app. iPhone Safari → Share → **Add to Home Screen**.
+3. The installed app opens the tool (`#/app`). The public URL opens the landing page first, with Terms, Privacy, and a Support button that does not take payment.
 
-**Privacy:** only the empty app shell is on the web. All your logs stay in your phone's browser storage — nothing personal is uploaded. Back up via Settings → *Export backup*.
+**Privacy:** your logs stay in localStorage on the device. The service worker caches the app shell only. Back up via Settings → *Export backup*. The Anchor is not a medical device. In an emergency, call 112.
 
 ## The four modules
 
@@ -47,10 +49,11 @@ Anchor is an installable **PWA** (`manifest.webmanifest` + `sw.js` + `icons/`). 
 
 ## Crisis contacts (verify these are current)
 
-Hard-coded SA national lines, shown on the SOS screen and tap-to-dial:
+Hard-coded SA lines, shown on the landing page and the SOS screen, tap-to-dial. They are refreshed from the app on load so an old localStorage copy cannot keep a stale official number. SOS is never paywalled.
 - **SADAG Suicide Crisis Line — 0800 567 567** (24h)
-- **SADAG Mental Health Line — 011 234 4837**
-- **Substance Abuse Helpline — 0800 12 13 14** (SMS 32312)
+- **DSD Substance Abuse Helpline — 0800 12 13 14** (24h, SMS 32312)
+- **Cipla Mental Health — 0800 456 789** (24h, SMS 31393)
+- **SADAG office, 8am–8pm — 011 234 4837** (not a 24-hour line)
 - **Emergency — 112**
 
 Add your own people (sponsor, therapist) in Settings → Recovery.
@@ -82,10 +85,27 @@ Emitted events: `flow.routine_completed`, `flow.routine_exited`, `copilot.sessio
 `copilot.session_done`, `anchor.mood_logged`, `anchor.thought_record`,
 `recovery.urge_surf_started`, `recovery.urge_surf_done`, `recovery.relapse_logged`.
 
+## Public pages
+
+- `#/` landing, including **Add to Home screen** steps and the crisis lines
+- `#/app` the tool (installed PWA start)
+- `#/app?sos=1` opens SOS immediately
+- `#/terms` short terms (not a medical device; emergency 112)
+- `#/privacy` data stays in localStorage
+- `#/support` **Support The Anchor** placeholder — no payment wiring
+
 ## Tech
 
-React 18 + Tailwind, vendored locally in `vendor/` (offline). State = `useReducer` + Context,
-persisted to localStorage. In-browser Babel keeps it zero-install; for a production build, port the
-`text/babel` block to a Vite project (optional future optimization).
+React 18 + Tailwind, compiled with Vite (`npm run build` → `dist/`). State = `useReducer` + Context,
+persisted to localStorage. The service worker is generated at build time and precaches the static shell.
+There is no in-browser Babel.
 
-*Not a medical device. A support tool. In an emergency, call the numbers above.*
+Headless check (production preview must already be running):
+
+```
+npm run build
+npm run preview
+npm run test:browser
+```
+
+*Not a medical device. A support tool. In an emergency, call 112.*
